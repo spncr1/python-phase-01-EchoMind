@@ -5,6 +5,7 @@ import os
 import pygame
 import time
 import speech_recognition as sr
+import whisper
 from gtts import gTTS
 from playsound import playsound
 import tempfile
@@ -12,6 +13,9 @@ import tempfile
 # LOAD API KEY
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
+
+# LOAD WHISPER (STT)
+model = whisper.load_model("base")
 
 # TEXT-TO-SPEECH HANDLER
 def speak (text):
@@ -24,22 +28,27 @@ def speak (text):
 
 # LISTEN FOR COMMAND
 def listen_command():
-    recognizer = sr.Recognizer()
     with sr.Microphone() as source:
+        recognizer = sr.Recognizer()
         print("Listening...")
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
 
         try:
             print("Recognizing...") # or Listening...
-            query = recognizer.recognize_google(audio, language='en-in') # variable that stores user query as speech (specifically understanding it as english)
+            print("Recording audio to file...")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
+                with open(temp_audio.name, "wb") as f:
+                    f.write(audio.get_wav_data())
+
+            print("Transcribing with Whisper...")
+            result = model.transcribe(temp_audio.name)
+            query = result["text"].lower()
             print("You said:", query)
             return query.lower()
-        except sr.UnknownValueError:
-            speak("Sorry sir, I didn't catch that.")
-            return ""
-        except sr.RequestError:
-            speak("There was a problem connecting to the speech service.")
+        except Exception as e:
+            speak("Error. There was an issue with the transcription sir.")
+            speak(f"{e}")
             return ""
 
 # WAKE WORDS LIST
@@ -63,9 +72,9 @@ def wait_for_wake_word():
         print("Awaiting wake command...")
         audio = recognizer.listen(source)
         try:
-            phrase = recognizer.recognize_google(audio).lower()
-            print("Heard:", phrase)
-            if phrase in wake_words:
+            wake_word_phrase = recognizer.recognize_google(audio).lower()
+            print("Heard:", wake_word_phrase)
+            if wake_word_phrase in wake_words:
                 print("Playing startup sound...")
                 play_sound("/Users/spncr1/Desktop/Coding/Projects/Python Projects/personal-ai-assistant-(name)/phase 1/python-phase-01-EchoMind/startup.mp3")
                 speak("EchoMind online. Awaiting your command, sir.")
@@ -102,7 +111,8 @@ def main ():
         response = ask_gpt(query)
         speak(response)
     else:
-        speak("I do not recognize your command. Please try again sir.")
+        pass
+        #speak("I do not recognize your command. Please try again sir.")
 
 if __name__ == "__main__":
     if wait_for_wake_word():
