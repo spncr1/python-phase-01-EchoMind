@@ -1,6 +1,13 @@
+# Virtual environments
 .venv/
-.venv/
-.venv/
+
+# Environment variables
+.env
+
+# IDE/project files
+.idea/
 __pycache__/
 *.pyc
+
+# Mac system files
 .DS_Store
