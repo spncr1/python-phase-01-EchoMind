@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import pygame
 import time
 import speech_recognition as sr
-import whisper
 #from gtts import gTTS
 from playsound import playsound
 import tempfile
@@ -19,9 +18,6 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 
 # ELEVENLABS TTS SETTINGS
 ELEVENLABS_VOICE_ID = "PYVunL4QLJz0auimQhZB" # Set to "Aussie JARVIS" for now
-
-# LOAD WHISPER (STT)
-model = whisper.load_model("base")
 
 # INITIATE ELEVENLABS CLIENT ONCE WITH API KEY
 elevenlabs_client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
@@ -65,15 +61,8 @@ def listen_command():
         audio = recognizer.listen(source)
 
         try:
-            print("Recognizing...") # or Listening...
-            print("Recording audio to file...")
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
-                with open(temp_audio.name, "wb") as f:
-                    f.write(audio.get_wav_data())
-
-            print("Transcribing with Whisper...")
-            result = model.transcribe(temp_audio.name)
-            query = result["text"].lower()
+            print("Transcribing with Whisper...") #  or Listening...
+            query = recognizer.recognize_whisper(audio, model="base")
             print("You said:", query)
             return query.lower()
         except Exception as e:
@@ -93,11 +82,17 @@ wake_words = ["wake up",
               "turn on"]
 
 def play_sound(file_path):
-    pygame.mixer.init()
-    pygame.mixer.music.load(file_path)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        time.sleep(0.1)
+    try:
+        if os.path.exists(file_path):
+            pygame.mixer.init()
+            pygame.mixer.music.load(file_path)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                time.sleep(0.1)
+        else:
+            print("Startup sound file not found, skipping...")
+    except Exception as e:
+        print(f"Error in playing sound file: {e}")
 
 # WAIT FOR WAKE WORD FUNCTION
 def wait_for_wake_word():
@@ -109,7 +104,7 @@ def wait_for_wake_word():
             wake_word_phrase = recognizer.recognize_google(audio).lower()
             print("Heard:", wake_word_phrase)
             if wake_word_phrase in wake_words:
-                play_sound("/Users/spncr1/Desktop/Coding/Projects/Python Projects/personal-ai-assistant-(name)/phase 1/python-phase-01-EchoMind/startup.mp3")
+                play_sound("/Users/spncr1/Desktop/Coding/Projects/Python Projects/personal-ai-assistant-(NOVIS)/phase 1/python-phase-01-EchoMind/startup.mp3")
                 speak("EchoMind online. Awaiting your command sir.")
                 return True
         except Exception as e:
@@ -144,7 +139,7 @@ def main ():
         response = ask_gpt(query)
         speak(response)
     else:
-        speak("I do not recognize your command. Please try again sir.")
+        pass # can serve as a placeholder for extra error handling logic (if needed)
 
 if __name__ == "__main__":
     if wait_for_wake_word():
