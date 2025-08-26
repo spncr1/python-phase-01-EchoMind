@@ -1,6 +1,6 @@
 # EchoMind
 
-A single-request voice assistant powered by GPT-3.5-turbo.
+A single-request voice assistant powered by GPT-3.5-turbo. Part of the blueprint to eventually create my own virtual assistant for the purpose of automation and increased efficiency in overall workflow.
 
 ## Table of Contents
 - [Description](#description)
