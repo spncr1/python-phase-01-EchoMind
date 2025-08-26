@@ -21,12 +21,12 @@ The project is currently implemented as a single Python file (`EchoMind.py`) for
 
 ## Features
 
-- 🔹 **Wake Word Activation**: Listens for customizable wake words to start the assistant ("wake up", "are you there", etc.)
-- 🔹 **Voice Recognition**: Uses Whisper and SpeechRecognition for robust transcription from microphone input
-- 🔹 **Natural Language Understanding**: Processes your request using OpenAI GPT-3.5-turbo
-- 🔹 **High-Quality Text-to-Speech**: ElevenLabs TTS delivers realistic, expressive voice responses
-- 🔹 **Single-Query Simplicity**: Handles one request at a time for streamlined, distraction-free interaction
-- 🔹 **Error Handling**: Graceful feedback for API or network issues
+-  **Wake Word Activation**: Listens for customizable wake words to start the assistant ("wake up", "are you there", etc.)
+-  **Voice Recognition**: Uses Whisper and SpeechRecognition for robust transcription from microphone input
+-  **Natural Language Understanding**: Processes your request using OpenAI GPT-3.5-turbo
+-  **High-Quality Text-to-Speech**: ElevenLabs TTS delivers realistic, expressive voice responses
+-  **Single-Query Simplicity**: Handles one request at a time for streamlined, distraction-free interaction
+-  **Error Handling**: Graceful feedback for API or network issues
 
 ## Getting Started
 
